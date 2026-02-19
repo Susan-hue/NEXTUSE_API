@@ -1,68 +1,28 @@
-// const mongoose = require("mongoose");
-
-// const userSchema = new mongoose.Schema(
-//   {
-//     name: {
-//       type: String,
-//       required: true,
-//     },
-
-//     email: {
-//       type: String,
-//       required: true,
-//       unique: true,
-//     },
-
-//     password: {
-//       type: String,
-//       required: true,
-//       select: false,  //hide password by default
-//     },
-
-//     role: {
-//       type: String,
-//       enum: ["household", "agent", "admin"],
-//       default: "household",
-//     },
-
-//     phone: {
-//         type: String,
-//     },
-
-//     address:{
-//         type: String,
-//     },
-
-//     walletBalance: {
-//       type: Number,
-//       default: 0,
-//     },
-
-//     rewardPoints: {
-//       type:  Number,
-//       default:0,
-//     }
-//   },
-//   { timestamps: true }
-// );
-
-// module.exports = mongoose.model("User", userSchema);
-
-
-
-
-
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
-    name: String,
+    name: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
+      required: true,
       unique: true,
     },
-    password: String,
+    password: {
+      type: String,
+      required: true,
+      select: false, //hides password from queries by default
+    },
+    phone: {
+      type: String,
+    },
+    address: {
+      type: String,
+    },
     role: {
       type: String,
       enum: ["household", "driver", "admin"],
@@ -72,14 +32,22 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    wallet: {
+      type: Number,
+      default: 0,
+    },
+    earnings: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+//PRE-SAVE HOOK HASHES plain-text PASSWORD AUTOMATICALLY BEFORE IT IS SAVED IN DB SO NO NEED FOR MANUAL HASHING
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
 
 module.exports = mongoose.model("User", userSchema);

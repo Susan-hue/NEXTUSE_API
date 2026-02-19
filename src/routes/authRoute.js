@@ -1,6 +1,6 @@
 const express = require("express");
 const { register, login } = require("../controllers/authCtrl");
-const { protect } = require("../middleware/authZ");
+const { protect, authorize } = require("../middleware/authZ");
 
 
 const router = express.Router();
@@ -26,9 +26,16 @@ router.get("/test", (req, res) => {
 });
 
 
-router.get("/all-users", async (req, res) => {
-  const users = await require("../models/user").find();
-  res.json(users);
+// FIXED - admin only, password excluded
+router.get("/all-users", protect, authorize("admin"), async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+
 });
 
 

@@ -7,9 +7,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// app.get('/', (req, res) => { 
-//     res.send("NextUse API is running")
-// });
 
 // app.use((req, res, next) => {
 //   console.log("Incoming request:", req.method, req.url);
@@ -28,4 +25,9 @@ const inventoryRoutes = require("./src/routes/inventoryRoute");
 app.use("/api/inventory", inventoryRoutes);
 
 const { protect, authorize } = require("./src/middleware/authZ");
+
+
+const redeemRoutes = require("./src/routes/redeemRoute");
+app.use("/api/redeem", redeemRoutes);
+
 module.exports = app;

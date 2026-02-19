@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+//Tracks how points were earned per pickup
 const pointsLogSchema = new mongoose.Schema(
   {
     user: {
